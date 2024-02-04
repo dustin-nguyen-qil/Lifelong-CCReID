@@ -139,6 +139,7 @@ def Incremental_combine_train_samples(samples_list):
     all_samples, new_samples = [], []
     all_pid_per_step, all_cid_per_step, output_all_per_step = OrderedDict(), OrderedDict(), defaultdict(dict)
     max_pid, max_cid = 0, 0
+    # number of steps is the number of datasets for training
     for step, samples in enumerate(samples_list):
         for a_sample in samples:
             img_path = a_sample[0]
