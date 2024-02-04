@@ -12,4 +12,12 @@ from .sensereid import IncrementalSamples4sensereid
 from .market1501 import IncrementalSamples4market
 from .dukemtmcreid import IncrementalSamples4duke
 from .cuhksysu import IncrementalSamples4subcuhksysu
+from .celeb import IncrementalSamples4Celeb
+from .celeblight import IncrementalSamples4CelebLight
+from .deepchange import IncrementalSamples4DeepChange
+from .ltcc import IncrementalSamples4LTCC
+from .prcc import IncrementalSamples4PRCC
+from .cocas import IncrementalSamples4Cocas
+from .vcclothes import IncrementalSamples4VCClothes
+from .real28 import IncrementalSamples4Real28
 from .mix import IncrementalSamples4mix
