@@ -135,62 +135,59 @@ def fast_test_continual_neck(config, base, loaders, current_step, if_test_forget
 
 
 def test_continual_neck(config, base, loaders, current_step):
-
+    
     base.set_all_model_eval()
     print(f'****** start perform full testing! ******')
-    # meters
-    query_features_meter, query_pids_meter, query_cids_meter = CatMeter(), CatMeter(), CatMeter()
-    gallery_features_meter, gallery_pids_meter, gallery_cids_meter = CatMeter(), CatMeter(), CatMeter()
 
-    # init dataset
-    if config.test_dataset == 'market':
-        loaders = [loaders.market_query_loader, loaders.market_gallery_loader]
-    elif config.test_dataset == 'duke':
-        loaders = [loaders.duke_query_loader, loaders.duke_gallery_loader]
-    elif config.test_dataset == 'mix':
-        loaders = [loaders.mix_query_loader, loaders.mix_gallery_loader]
-    else:
-        assert 0, 'test dataset error, expect mix/market/duke/, given {}'.format(config.test_dataset)
+    for dataset_name, temp_loaders in loaders.test_loader_dict.items():
+        if dataset_name == 'prcc':
+            pass
+        elif dataset_name in ['celeb', 'celeblight', 'deepchange']:
+            pass 
+        # meters
+        query_features_meter, query_pids_meter, query_cids_meter = CatMeter(), CatMeter(), CatMeter()
+        gallery_features_meter, gallery_pids_meter, gallery_cids_meter = CatMeter(), CatMeter(), CatMeter()
 
-    print(time_now(), 'feature start')
 
-    # compute query and gallery features
-    with torch.no_grad():
-        for loader_id, loader in enumerate(loaders):
-            for data in loader:
-                # compute feautres
-                images, pids, cids, _ = data
-                images = images.to(base.device)
-                features, _ = base.model_dict['tasknet'](images, current_step)
-                # save as query features
-                if loader_id == 0:
-                    query_features_meter.update(features.data)
-                    query_pids_meter.update(pids)
-                    query_cids_meter.update(cids)
-                # save as gallery features
-                elif loader_id == 1:
-                    gallery_features_meter.update(features.data)
-                    gallery_pids_meter.update(pids)
-                    gallery_cids_meter.update(cids)
+        print(time_now(), f' {dataset_name} feature start ')
 
-    print(time_now(), 'feature done')
+        # compute query and gallery features
+        with torch.no_grad():
+            for loader_id, loader in enumerate(temp_loaders):
+                for data in loader:
+                    # compute feautres
+                    images, pids, cids, _ = data
+                    images = images.to(base.device)
+                    features, _ = base.model_dict['tasknet'](images, current_step)
+                    # save as query features
+                    if loader_id == 0:
+                        query_features_meter.update(features.data)
+                        query_pids_meter.update(pids)
+                        query_cids_meter.update(cids)
+                    # save as gallery features
+                    elif loader_id == 1:
+                        gallery_features_meter.update(features.data)
+                        gallery_pids_meter.update(pids)
+                        gallery_cids_meter.update(cids)
 
-    #
-    query_features = query_features_meter.get_val_numpy()
-    gallery_features = gallery_features_meter.get_val_numpy()
+        print(time_now(), 'feature done')
 
-    # compute mAP and rank@k
-    mAP, CMC = ReIDEvaluator(dist=config.test_metric, mode=config.test_mode).evaluate(
-        query_features, query_cids_meter.get_val_numpy(), query_pids_meter.get_val_numpy(),
-        gallery_features, gallery_cids_meter.get_val_numpy(), gallery_pids_meter.get_val_numpy())
+        #
+        query_features = query_features_meter.get_val_numpy()
+        gallery_features = gallery_features_meter.get_val_numpy()
 
-    # compute precision-recall curve
-    thresholds = np.linspace(1.0, 0.0, num=101)
-    pres, recalls, thresholds = PrecisionRecall(dist=config.test_metric, mode=config.test_mode).evaluate(
-        thresholds, query_features, query_cids_meter.get_val_numpy(), query_pids_meter.get_val_numpy(),
-        gallery_features, gallery_cids_meter.get_val_numpy(), gallery_pids_meter.get_val_numpy())
+        # compute mAP and rank@k
+        mAP, CMC = ReIDEvaluator(dist=config.test_metric, mode=config.test_mode).evaluate(
+            query_features, query_cids_meter.get_val_numpy(), query_pids_meter.get_val_numpy(),
+            gallery_features, gallery_cids_meter.get_val_numpy(), gallery_pids_meter.get_val_numpy())
 
-    return mAP, CMC[0: 150], pres, recalls, thresholds
+        # compute precision-recall curve
+        thresholds = np.linspace(1.0, 0.0, num=101)
+        pres, recalls, thresholds = PrecisionRecall(dist=config.test_metric, mode=config.test_mode).evaluate(
+            thresholds, query_features, query_cids_meter.get_val_numpy(), query_pids_meter.get_val_numpy(),
+            gallery_features, gallery_cids_meter.get_val_numpy(), gallery_pids_meter.get_val_numpy())
+
+        return mAP, CMC[0: 150], pres, recalls, thresholds
 
 
 def plot_prerecall_curve(config, pres, recalls, thresholds, mAP, CMC, label, current_step):

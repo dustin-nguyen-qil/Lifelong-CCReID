@@ -70,7 +70,7 @@ class IncrementalSamples4Cocas(IncrementalPersonReIDSamples):
             camid -= 1 # index starts from 0
             pid = pid2label[pid]
             
-            dataset.append([img_path, pid, camid, 'cocas', pid])
+            dataset.append([img_path, pid, camid, 'cocas', pid, cloth_id])
             
         
         num_imgs = len(dataset)
@@ -111,7 +111,7 @@ class IncrementalSamples4Cocas(IncrementalPersonReIDSamples):
             pid, camid = int(pid), int(camid)
             camid -= 1 # index starts from 0
             
-            query_dataset.append([img_path, pid, camid, 'cocas', pid])
+            query_dataset.append([img_path, pid, camid, 'cocas', pid, cloth_id])
 
         for img_path in gallery_img_paths:
             pid, camid, _ = pattern.search(img_path).groups()
@@ -119,7 +119,7 @@ class IncrementalSamples4Cocas(IncrementalPersonReIDSamples):
             pid, camid = int(pid), int(camid)
             camid -= 1 # index starts from 0
             
-            gallery_dataset.append([img_path, pid, camid, 'cocas', pid])
+            gallery_dataset.append([img_path, pid, camid, 'cocas', pid, cloth_id])
 
         
         num_imgs_query = len(query_dataset)

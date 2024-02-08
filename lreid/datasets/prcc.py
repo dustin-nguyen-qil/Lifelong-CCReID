@@ -91,7 +91,7 @@ class IncrementalSamples4PRCC(IncrementalPersonReIDSamples):
                     clothes_id = clothes2label[osp.basename(pdir)]
                 else:
                     clothes_id = clothes2label[osp.basename(pdir)+osp.basename(img_path)[0]]
-                dataset.append([img_path, pid, camid, 'prcc', pid])
+                dataset.append([img_path, pid, camid, 'prcc', pid, clothes_id])
                 pid2clothes[label, clothes_id] = 1            
         
         num_imgs = len(dataset)
@@ -126,16 +126,16 @@ class IncrementalSamples4PRCC(IncrementalPersonReIDSamples):
                     camid = cam2label[cam]
                     if cam == 'A':
                         clothes_id = pid2label[pid] * 2
-                        gallery_dataset.append([img_path, pid, camid, 'prcc', pid])
+                        gallery_dataset.append([img_path, pid, camid, 'prcc', pid, clothes_id])
                     elif cam == 'B':
                         clothes_id = pid2label[pid] * 2
-                        query_dataset_same_clothes.append([img_path, pid, camid, 'prcc', pid])
+                        query_dataset_same_clothes.append([img_path, pid, camid, 'prcc', pid, clothes_id])
                     else:
                         clothes_id = pid2label[pid] * 2 + 1
-                        query_dataset_diff_clothes.append([img_path, pid, camid, 'prcc', pid])
+                        query_dataset_diff_clothes.append([img_path, pid, camid, 'prcc', pid, clothes_id])
 
         pid2imgidx = {}
-        for idx, (img_path, pid, camid, clothes_id) in enumerate(gallery_dataset):
+        for idx, (img_path, pid, camid, _, _, _) in enumerate(gallery_dataset):
             if pid not in pid2imgidx:
                 pid2imgidx[pid] = []
             pid2imgidx[pid].append(idx)

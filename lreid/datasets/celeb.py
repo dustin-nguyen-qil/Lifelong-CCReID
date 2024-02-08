@@ -13,6 +13,7 @@ import random
 class IncrementalSamples4Celeb(IncrementalPersonReIDSamples):
     """
         Celebrities-ReID dataset
+        Has no clothing labels
     """
     dataset_dir = 'Celeb-reID'
     def __init__(self, datasets_root, **kwargs):
@@ -64,13 +65,14 @@ class IncrementalSamples4Celeb(IncrementalPersonReIDSamples):
         dataset = []
         
         for img_path in img_paths:
-            pid, camid = pattern.search(img_path).groups()
+            pid, camid, _ = pattern.search(img_path).groups()
+            cloth_id = 0
             
             pid, camid = int(pid), int(camid)
             camid -= 1 # index starts from 0
             pid = pid2label[pid]
             
-            dataset.append([img_path, pid, camid, 'celeb', pid])
+            dataset.append([img_path, pid, camid, 'celeb', pid, cloth_id])
             
         
         num_imgs = len(dataset)
@@ -107,19 +109,19 @@ class IncrementalSamples4Celeb(IncrementalPersonReIDSamples):
         gallery_dataset = []
         for img_path in query_img_paths:
             pid, camid, _ = pattern.search(img_path).groups()
-            
+            cloth_id = 0
             pid, camid = int(pid), int(camid)
             camid -= 1 # index starts from 0
             
-            query_dataset.append([img_path, pid, camid, 'celeb', pid])
+            query_dataset.append([img_path, pid, camid, 'celeb', pid, cloth_id])
 
         for img_path in gallery_img_paths:
             pid, camid, _ = pattern.search(img_path).groups()
-            
+            cloth_id = 0
             pid, camid = int(pid), int(camid)
             camid -= 1 # index starts from 0
             
-            gallery_dataset.append([img_path, pid, camid, 'celeb', pid])
+            gallery_dataset.append([img_path, pid, camid, 'celeb', pid, cloth_id])
 
         
         num_imgs_query = len(query_dataset)

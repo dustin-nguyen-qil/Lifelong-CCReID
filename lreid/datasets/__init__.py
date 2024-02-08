@@ -20,4 +20,6 @@ from .prcc import IncrementalSamples4PRCC
 from .cocas import IncrementalSamples4Cocas
 from .vcclothes import IncrementalSamples4VCClothes
 from .real28 import IncrementalSamples4Real28
+from .last import IncrementalSamples4LaST
 from .mix import IncrementalSamples4mix
+

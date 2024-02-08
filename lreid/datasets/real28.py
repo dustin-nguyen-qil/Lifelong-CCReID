@@ -31,8 +31,6 @@ class IncrementalSamples4Real28(IncrementalPersonReIDSamples):
         """Check if all files are available before going deeper"""
         if not osp.exists(self.dataset_dir):
             raise RuntimeError("'{}' is not available".format(self.dataset_dir))
-        if not osp.exists(self.train_dir):
-            raise RuntimeError("'{}' is not available".format(self.train_dir))
         if not osp.exists(self.query_dir):
             raise RuntimeError("'{}' is not available".format(self.query_dir))
         if not osp.exists(self.gallery_dir):
@@ -75,7 +73,7 @@ class IncrementalSamples4Real28(IncrementalPersonReIDSamples):
             pid, camid = int(pid), int(camid)
             camid -= 1 # index starts from 0
             clothes_id = clothes2label[clothes_id]
-            query_dataset.append([img_path, pid, camid, 'real28', pid])
+            query_dataset.append([img_path, pid, camid, 'real28', pid, clothes_id])
 
         for img_path in gallery_img_paths:
             pid, camid, clothes, _ = pattern.search(img_path).groups()
@@ -83,7 +81,7 @@ class IncrementalSamples4Real28(IncrementalPersonReIDSamples):
             pid, camid = int(pid), int(camid)
             camid -= 1 # index starts from 0
             clothes_id = clothes2label[clothes_id]
-            gallery_dataset.append([img_path, pid, camid, 'real28', pid])
+            gallery_dataset.append([img_path, pid, camid, 'real28', pid, clothes_id])
         
         num_imgs_query = len(query_dataset)
         num_imgs_gallery = len(gallery_dataset)

@@ -80,7 +80,7 @@ class IncrementalSamples4VCClothes(IncrementalPersonReIDSamples):
             camid -= 1 # index starts from 0
             pid = pid2label[pid]
             clothes_id = clothes2label[clothes_id]
-            dataset.append([img_path, pid, camid, 'vcclothes', pid])
+            dataset.append([img_path, pid, camid, 'vcclothes', pid, clothes_id])
             pid2clothes[pid, clothes_id] = 1
         
         num_imgs = len(dataset)
@@ -136,7 +136,7 @@ class IncrementalSamples4VCClothes(IncrementalPersonReIDSamples):
                 continue
             camid -= 1 # index starts from 0
             clothes_id = clothes2label[clothes_id]
-            query_dataset.append([img_path, pid, camid, 'vcclothes', pid])
+            query_dataset.append([img_path, pid, camid, 'vcclothes', pid, clothes_id])
 
         for img_path in gallery_img_paths:
             pid, camid, clothes, _ = pattern.search(img_path).groups()
@@ -148,7 +148,7 @@ class IncrementalSamples4VCClothes(IncrementalPersonReIDSamples):
                 continue
             camid -= 1 # index starts from 0
             clothes_id = clothes2label[clothes_id]
-            gallery_dataset.append([img_path, pid, camid, 'vcclothes', pid])
+            gallery_dataset.append([img_path, pid, camid, 'vcclothes', pid, clothes_id])
         
         num_imgs_query = len(query_dataset)
         num_imgs_gallery = len(gallery_dataset)

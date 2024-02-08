@@ -76,7 +76,7 @@ class IncrementalSamples4LTCC(IncrementalPersonReIDSamples):
             camid -= 1 # index starts from 0
             pid = pid2label[pid]
             clothes_id = clothes2label[clothes]
-            dataset.append([img_path, pid, camid, 'ltcc', pid])
+            dataset.append([img_path, pid, camid, 'ltcc', pid, clothes_id])
             pid2clothes[pid, clothes_id] = 1
         
         num_imgs = len(dataset)
@@ -118,14 +118,14 @@ class IncrementalSamples4LTCC(IncrementalPersonReIDSamples):
             clothes_id = pattern2.search(img_path).group(1)
             camid -= 1 # index starts from 0
             clothes_id = clothes2label[clothes_id]
-            query_dataset.append([img_path, pid, camid, 'ltcc', pid])
+            query_dataset.append([img_path, pid, camid, 'ltcc', pid, clothes_id])
 
         for img_path in gallery_img_paths:
             pid, _, camid = map(int, pattern1.search(img_path).groups())
             clothes_id = pattern2.search(img_path).group(1)
             camid -= 1 # index starts from 0
             clothes_id = clothes2label[clothes_id]
-            gallery_dataset.append([img_path, pid, camid, 'ltcc', pid])
+            gallery_dataset.append([img_path, pid, camid, 'ltcc', pid, clothes_id])
         
         num_imgs_query = len(query_dataset)
         num_imgs_gallery = len(gallery_dataset)

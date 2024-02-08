@@ -142,7 +142,7 @@ class IncrementalSamples4DeepChange(IncrementalPersonReIDSamples):
             # on DeepChange, we allow the true matches coming from the same camera 
             # but different tracklets as query following the original paper.
             # So we use tracklet_id to replace camid for each sample.
-            dataset.append([img_path, pid, camid, 'deepchange', pid])
+            dataset.append([img_path, pid, camid, 'deepchange', pid, clothes_id])
         num_pids = len(pid_container)
         num_clothes = len(clothes_container)
 

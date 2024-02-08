@@ -1,6 +1,7 @@
 import ast
 from lreid.tools import time_now
 from lreid.core import Base_metagraph_p_s
+from torch.cuda.amp import autocast 
 from lreid.data_loader import IncrementalReIDLoaders
 from lreid.visualization import visualize, Logger, VisdomPlotLogger, VisdomFeatureMapsLogger
 from lreid.operation import (train_p_s_an_epoch, fast_test_p_s,
@@ -11,6 +12,7 @@ def main(config):
 
     # init loaders and base
     loaders = IncrementalReIDLoaders(config)
+    
     base = Base_metagraph_p_s(config, loaders)
 
     # init logger
@@ -100,11 +102,19 @@ def main(config):
 
     elif config.mode == 'test':	# test mode
         base.resume_from_model(config.resume_test_model)
-        mAP, CMC, pres, recalls, thresholds = test_continual_neck(config, base, loaders, 0)
-        logger('Time: {}; Test Dataset: {}, \nmAP: {} \nRank: {}'.format(time_now(), config.test_dataset, mAP, CMC))
-        logger('Time: {}; Test Dataset: {}, \nprecision: {} \nrecall: {}\nthresholds: {}'.format(
-            time_now(), config.test_dataset, mAP, CMC, pres, recalls, thresholds))
-        plot_prerecall_curve(config, pres, recalls, thresholds, mAP, CMC, 'none')
+        current_step = loaders.total_step - 1
+        with autocast(config.fp_16):
+            rank_map_dict, rank_map_str = fast_test_p_s(config, base, loaders, current_step, if_test_forget=config.if_test_forget)
+            logger(
+                f'Time: {time_now()}; Step: {current_step}; Test Dataset: {config.test_dataset}, {rank_map_str}')
+            print(f'Current step {current_step} is finished.')
+    # elif config.mode == 'test':	# test mode
+    #     base.resume_from_model(config.resume_test_model)
+    #     mAP, CMC, pres, recalls, thresholds = test_continual_neck(config, base, loaders, 0)
+    #     logger('Time: {}; Test Dataset: {}, \nmAP: {} \nRank: {}'.format(time_now(), config.test_dataset, mAP, CMC))
+    #     logger('Time: {}; Test Dataset: {}, \nprecision: {} \nrecall: {}\nthresholds: {}'.format(
+    #         time_now(), config.test_dataset, mAP, CMC, pres, recalls, thresholds))
+    #     plot_prerecall_curve(config, pres, recalls, thresholds, mAP, CMC, 'none')
 
 
     elif config.mode == 'visualize': # visualization mode
@@ -126,7 +136,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--fp_16', type=bool, default=False)
     parser.add_argument('--running_time', type=str, default=running_time)
-    parser.add_argument('--visualize_train_by_visdom', type=bool, default=True)
+    parser.add_argument('--visualize_train_by_visdom', type=bool, default=False)
     parser.add_argument('--cuda', type=str, default='cuda')
     parser.add_argument('--mode', type=str, default='train', help='train_10, train_5, train, test or visualize')
     parser.add_argument('--output_path', type=str, default=f'results/{running_time}', help='path to save related informations')
@@ -144,20 +154,19 @@ if __name__ == '__main__':
 
     # dataset configuration
     # machine_dataset_path = '/home/prometheus/Experiments/Datasets'
-    machine_dataset_path = 'data' # path to pickle files of CCRe-ID datasets
+    machine_dataset_path = '/media/dustin/DATA/Research/2DReID/Datasets/' # path to CCRe-ID datasets
     
-    parser.add_argument('--datasets_root', type=str, default=machine_dataset_path, help='mix/market/duke/')
+    parser.add_argument('--datasets_root', type=str, default=machine_dataset_path, help='path to CCRe-ID datasets')
     parser.add_argument('--combine_all', type=ast.literal_eval, default=False, help='train+query+gallery as train')
     # parser.add_argument('--train_dataset', nargs='+', type=str,
     #                     default=['market', 'duke', 'cuhksysu', 'subcuhksysu', 'msmt17', 'cuhk03','mix','sensereid',
     #                              'cuhk01','cuhk02','viper','ilids','prid','grid'])
     parser.add_argument('--train_dataset', nargs='+', type=str,
-                        default=['market','subcuhksysu','duke','msmt17','cuhk03'], 
-                        help=['ltcc', 'prcc', 'LaST', 'vc-clothes', 'Real28', 'Celeb-reID', 'Celeb-reID-light', 'deepchange', 'cocas'])
-    # parser.add_argument('--test_dataset', nargs='+', type=str,
-    #                     default=['market','duke','cuhk03','allgeneralizable','cuhk01','cuhk02','viper','ilids','prid','grid','sensereid'])
+                        default=['ltcc', 'prcc', 'last'], 
+                        help=['ltcc', 'prcc', 'last', 'vcclothes', 'real28', 'celeb', 'celeblight', 'deepchange', 'cocas'])
     parser.add_argument('--test_dataset', nargs='+', type=str,
-                        default=['ltcc', 'prcc', 'LaST', 'vc-clothes', 'Real28', 'Celeb-reID', 'Celeb-reID-light', 'deepchange', 'cocas','allgeneralizable'])
+                        default=['real28', 'celeb'])
+                        # default=['vcclothes', 'real28', 'celeb'])
 
     parser.add_argument('--image_size', type=int, nargs='+', default=[256, 128])
     parser.add_argument('--test_batch_size', type=int, default=64, help='test batch size')
@@ -201,12 +210,12 @@ if __name__ == '__main__':
     parser.add_argument('--resume_train_dir', type=str, default='',
                         help='****************************************************************@@@@@@@@@@@@')
     parser.add_argument('--fast_test', type=bool,
-                        default=True,
+                        default=False,
                         help='test during train using Cython')
 
     parser.add_argument('--test_frequency', type=int,
-                        default=11,
-                        help='test during trai, i <= 0 means do not test during train')
+                        default=-1,
+                        help='test during train, i <= 0 means do not test during train')
     parser.add_argument('--if_test_forget', type=bool,
                         default=True,
                         help='test during train for forgeting')
@@ -215,12 +224,12 @@ if __name__ == '__main__':
                         help='test during train for forgeting')
 
     # test configuration
-    parser.add_argument('--resume_test_model', type=str, default='/path/to/pretrained/model.pkl', help='')
+    parser.add_argument('--resume_test_model', type=str, default='results/2024-02-04-01-11-33/models/0/model_tasknet_1.pkl', help='')
     parser.add_argument('--test_mode', type=str, default='all', help='inter-camera, intra-camera, all')
     parser.add_argument('--test_metric', type=str, default='cosine', help='cosine, euclidean')
 
     # visualization configuration
-    parser.add_argument('--resume_visualize_model', type=str, default='/path/to/pretrained/model.pkl',
+    parser.add_argument('--resume_visualize_model', type=str, default='results/2024-02-04-01-11-33/models/0/model_tasknet_1.pkl',
                         help='only availiable under visualize model')
     parser.add_argument('--visualize_dataset', type=str, default='',
                         help='market, duke, only  only availiable under visualize model')

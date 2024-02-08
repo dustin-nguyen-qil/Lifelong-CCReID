@@ -85,7 +85,7 @@ class IncrementalPersonReIDSamples:
             query_info = analyze(query)
             gallery_info = analyze(gallery)
 
-            # please kindly install prettytable: ```pip install prettyrable```
+            # please kindly install prettytable: ```pip install prettytable```
             table = PrettyTable(['set', 'images', 'identities', 'cameras'])
             table.add_row([self.__class__.__name__ if name is None else name, '', '', ''])
             table.add_row(['train', str(train_info[0]), str(train_info[1]), str(train_info[2])])
@@ -94,7 +94,6 @@ class IncrementalPersonReIDSamples:
             print(table)
         else:
             pass
-
 
 
 
@@ -144,6 +143,7 @@ def Incremental_combine_train_samples(samples_list):
         for a_sample in samples:
             img_path = a_sample[0]
             local_pid = a_sample[1]
+            cloth_id = a_sample[-1]
             try:
                 dataset_name = a_sample[3]
                 global_pid = max_pid + a_sample[1]
@@ -152,7 +152,7 @@ def Incremental_combine_train_samples(samples_list):
             except:
                 print(a_sample)
                 assert False
-            all_samples.append([img_path, global_pid, global_cid, dataset_name, local_pid])
+            all_samples.append([img_path, global_pid, global_cid, dataset_name, local_pid, cloth_id])
             if step in all_pid_per_step.keys():
                 all_pid_per_step[step].add(global_pid)
             else:

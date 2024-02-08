@@ -56,7 +56,8 @@ class LwFNet(nn.Module):
 
         self.class_num_list = class_num_list
         # backbone and optimize its architecture
-        resnet = torchvision.models.resnet50(pretrained=pretrained)
+        weights = torchvision.models.ResNet50_Weights.DEFAULT
+        resnet = torchvision.models.resnet50(weights=weights)
         resnet.layer4[0].conv2.stride = (1, 1)
         resnet.layer4[0].downsample[0].stride = (1, 1)
         self.backbone = nn.Sequential(
@@ -133,7 +134,8 @@ class LwFNet_without_bn(nn.Module):
 
         self.class_num_list = class_num_list
         # backbone and optimize its architecture
-        resnet = torchvision.models.resnet50(pretrained=pretrained)
+        weights = torchvision.models.ResNet50_Weights.DEFAULT
+        resnet = torchvision.models.resnet50(weights=weights)
         resnet.layer4[0].conv2.stride = (1, 1)
         resnet.layer4[0].downsample[0].stride = (1, 1)
         self.backbone = nn.Sequential(
@@ -199,7 +201,8 @@ class LwFNet_without_bn_bias(nn.Module):
 
         self.class_num_list = class_num_list
         # backbone and optimize its architecture
-        resnet = torchvision.models.resnet50(pretrained=pretrained)
+        weights = torchvision.models.ResNet50_Weights.DEFAULT
+        resnet = torchvision.models.resnet50(weights=weights)
         resnet.layer4[0].conv2.stride = (1, 1)
         resnet.layer4[0].downsample[0].stride = (1, 1)
         self.backbone = nn.Sequential(

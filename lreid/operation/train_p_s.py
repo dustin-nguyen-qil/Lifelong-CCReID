@@ -20,9 +20,9 @@ def train_p_s_an_epoch(config, base, loader, current_step, old_model, old_graph_
         if mini_batch[0].size(0) != config.p * config.k:
             mini_batch = loader.continual_train_iter_dict[
                 current_step].next_one()
-        imgs, global_pids, global_cids, dataset_name, local_pids, image_paths = mini_batch
+        imgs, global_pids, global_cids, dataset_name, local_pids, cloth_ids, image_paths = mini_batch
 
-        if len(mini_batch) > 6:
+        if len(mini_batch) > 7:
             assert config.continual_step == 'task'
         imgs, local_pids, global_pids = imgs.to(base.device), local_pids.to(base.device), global_pids.to(base.device)
         # if we use low precision, input also need to be fp16
@@ -57,7 +57,7 @@ def train_p_s_an_epoch(config, base, loader, current_step, old_model, old_graph_
                                                                     local_pids, local_pids, local_pids)
 
             cls_score = cls_score_list[-1]
-            with torch.no_grad():
+            with torch.inference_mode():
                 old_features, old_cls_score_list, old_feature_maps = old_model(imgs, old_current_step)
                 old_vertex = old_graph_model.meta_graph_vertex
             del old_features, old_feature_maps

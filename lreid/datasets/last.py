@@ -113,7 +113,7 @@ class IncrementalSamples4LaST(IncrementalPersonReIDSamples):
                 clothes_id = clothes2label[clothes]
             else:
                 clothes_id = pid
-            dataset.append([img_path, pid, camid, 'last', pid])
+            dataset.append([img_path, pid, camid, 'last', pid, clothes_id])
         num_pids = len(pid_container)
 
         return dataset, num_pids
