@@ -91,7 +91,7 @@ class IncrementalSamples4PRCC(IncrementalPersonReIDSamples):
                     clothes_id = clothes2label[osp.basename(pdir)]
                 else:
                     clothes_id = clothes2label[osp.basename(pdir)+osp.basename(img_path)[0]]
-                dataset.append([img_path, pid, camid, 'prcc', pid, clothes_id])
+                dataset.append([img_path, label, camid, 'prcc', label, clothes_id])
                 pid2clothes[label, clothes_id] = 1            
         
         num_imgs = len(dataset)
