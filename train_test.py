@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--fp_16', type=bool, default=False)
     parser.add_argument('--running_time', type=str, default=running_time)
-    parser.add_argument('--visualize_train_by_visdom', type=bool, default=True)
+    parser.add_argument('--visualize_train_by_visdom', type=bool, default=False)
     parser.add_argument('--cuda', type=str, default='cuda')
     parser.add_argument('--mode', type=str, default='train', help='train_10, train_5, train, test or visualize')
     parser.add_argument('--output_path', type=str, default=f'results/{running_time}', help='path to save related informations')
@@ -154,7 +154,7 @@ if __name__ == '__main__':
 
     # dataset configuration
     # machine_dataset_path = '/home/prometheus/Experiments/Datasets'
-    machine_dataset_path = '/media/dustin/DATA/Research/2DReID/Datasets/' # path to CCRe-ID datasets
+    machine_dataset_path = '/home/azakeri/reid/CC_Datasets/' # path to CCRe-ID datasets
     
     parser.add_argument('--datasets_root', type=str, default=machine_dataset_path, help='path to CCRe-ID datasets')
     parser.add_argument('--combine_all', type=ast.literal_eval, default=False, help='train+query+gallery as train')
