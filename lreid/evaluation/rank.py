@@ -3,7 +3,7 @@ import warnings
 from collections import defaultdict
 
 try:
-    from pkd.evaluation.rank_cylib.rank_cy import evaluate_cy
+    from lreid.evaluation.rank_cylib.rank_cy import evaluate_cy
     IS_CYTHON_AVAI = True
 except ImportError:
     IS_CYTHON_AVAI = False

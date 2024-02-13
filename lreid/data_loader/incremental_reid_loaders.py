@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../')
 import os
-from pkd.data_loader.incremental_datasets import IncrementalReIDDataSet, \
+from lreid.data_loader.incremental_datasets import IncrementalReIDDataSet, \
     Incremental_combine_train_samples, Incremental_combine_test_samples, IncrementalPersonReIDSamples
 import copy
 from lreid.datasets import (IncrementalSamples4subcuhksysu, IncrementalSamples4market,
