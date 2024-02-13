@@ -34,10 +34,10 @@ class ReIDEvaluator:
     def evaluate(self, query_features, query_camids, query_pids, gallery_features, gallery_camids, gallery_pids):
 
         '''compute distance matrix'''
-        if self.dist is 'cosine':
+        if self.dist == 'cosine':
             scores = self.cosine_dist(query_features, gallery_features)
             rank_results = np.argsort(scores)[:, ::-1]
-        elif self.dist is 'euclidean':
+        elif self.dist == 'euclidean':
             scores = self.euclidean_dist(query_features, gallery_features)
             rank_results = np.argsort(scores)
 

@@ -1,5 +1,5 @@
 import torch
-from lreid.utils import time_now, CatMeter
+from lreid.tools import time_now, CatMeter
 from lreid.evaluation import (fast_evaluate_rank, fast_evaluate_rank_prcc,
                             fast_evaluate_rank_cc, compute_distance_matrix)
 
