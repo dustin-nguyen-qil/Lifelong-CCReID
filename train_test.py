@@ -154,8 +154,8 @@ if __name__ == '__main__':
 
     # dataset configuration
     
-    # machine_dataset_path = '/home/azakeri/reid/CC_Datasets/' # path to CCRe-ID datasets
-    machine_dataset_path = '/media/dustin/DATA/Research/2DReID/Datasets/' # path to CCRe-ID datasets
+    machine_dataset_path = '/home/azakeri/reid/CC_Datasets/' # path to CCRe-ID datasets
+    # machine_dataset_path = '/media/dustin/DATA/Research/2DReID/Datasets/' # path to CCRe-ID datasets
     
     parser.add_argument('--datasets_root', type=str, default=machine_dataset_path, help='path to CCRe-ID datasets')
     parser.add_argument('--combine_all', type=ast.literal_eval, default=False, help='train+query+gallery as train')
